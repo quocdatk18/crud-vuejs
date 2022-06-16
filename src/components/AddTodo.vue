@@ -14,12 +14,17 @@ setup(props,context){
     const title=ref('')
   const addItem=(e)=>{
 e.preventDefault();
-const newItem={
+if(title.value==''){
+  alert('phải nhập công việc chứ')
+}else{
+  const newItem={
     id:uuidv4(),
     title:title.value,
     completed:false
 }
 context.emit('add-todo',newItem)
+
+}
 title.value=''
   }
     return{

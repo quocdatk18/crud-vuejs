@@ -8,45 +8,50 @@
 import { ref } from 'vue'
 import TodoItem from './TodoItem.vue'
 import AddTodo from "./AddTodo.vue"
-import {v4 as uuidv4} from 'uuid'
+import axios from 'axios'
+// import {v4 as uuidv4} from 'uuid'
 export default {
   components: { TodoItem,AddTodo },
 name:"myTodos",
 setup(){
-    const todos=ref([{
-      id:uuidv4(),
-      title:"viec 1",
-      completed:true
-    },
-    {
-      id:uuidv4(),
-      title:"viec 2",
-      completed:true
-    },
-    {
-      id:uuidv4(),
-      title:"viec 3",
-      completed:false
-    },
-    {
-      id:uuidv4(),
-      title:"viec 4",
-      completed:true
-    },
-    ])
+    const todos=ref([]);
+     const getAllTodos = async () => {
+      try {
+        const res = await axios.get(
+          'https://jsonplaceholder.typicode.com/todos?_limit=5'
+        )
+        // console.log(res.data)
+        todos.value = res.data
+    // console.log(todos.value)
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    getAllTodos()
 const markComplete=(id)=>{
 todos.value=todos.value.map(todo=>{
-  if(todo.id===id) todo .completed =! todo.completed
+  if(todo.id===id) todo.completed =! todo.completed
   return todo
 })
 }
-const deleteItem=(id)=>{
-  todos.value=todos.value.filter(todo=>todo.id!==id)
-  return todos
+const deleteItem= async (id)=>{
+  try {
+    await axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+    todos.value=todos.value.filter(todo=>todo.id!==id)
+  } catch (error) {
+    console.log(error)
+  }
 
 }
-const addTodo=(newTodo)=>{
-  todos.value.push(newTodo)
+const addTodo= async(newTodo)=>{
+  try {
+    const {data}= await axios.post('https://jsonplaceholder.typicode.com/todos',newTodo)
+    todos.value.push(data)
+  } catch (error) {
+    console.log(error)
+  }
 }
     return {
         todos,
